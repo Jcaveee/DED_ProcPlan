@@ -196,9 +196,9 @@ def main():
 		
 		#Try loading polygon
 		test_polygon = pickle.load(open('poly_data.pkl', 'rb'))
-		test_polygon = NN_order(test_polygon)
+		#test_polygon = NN_order(test_polygon)
 		#test_polygon = convex_hull(test_polygon)
-		#test_polygon = polar_order(test_polygon)
+		test_polygon = polar_order(test_polygon)
 		print(test_polygon.shape, test_polygon)
 		test_polygon = test_polygon[:,0:2]
 		print(test_polygon.shape, test_polygon)

@@ -305,7 +305,9 @@ def main():
         new_entry = np.reshape(your_mesh.points[idx],(-1,3))
         new_mesh.append(new_entry)
     new_mesh = np.asarray(new_mesh)
-    
+    print(your_mesh)
+    your_mesh.rotate([-0.5, 0.0, 0.0], math.radians(90))
+    print(your_mesh)
     plot_mesh(your_mesh)
     
     # Optional rotation of part

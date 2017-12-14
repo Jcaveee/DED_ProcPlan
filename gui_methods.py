@@ -14,6 +14,7 @@ import mp3d_widget as mp3d
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 import sys
+import math
 from PyQt4 import QtCore, QtGui
 import numpy as np
 import slicer as slicer
@@ -41,6 +42,7 @@ def open_stl(widget):
     else:
         global stl_mesh
         stl_mesh = mesh.Mesh.from_file(filename)
+        stl_mesh.rotate([-0.5, 0.0, 0.0], math.radians(90))
         widget.update_figure(stl_mesh)
     global stl_load_state
     stl_load_state = True
@@ -71,7 +73,7 @@ def clean_slice(dirty_slice):
     """ Helper function for calc_paths() to take slice polygon from lines to points"""
     dirty_slice = np.reshape(dirty_slice, (-1,1,3)).reshape(-1,3)
     dirty_slice = pathing.join_segments(dirty_slice)
-    slice_poly = pathing.NN_order(dirty_slice)
+    slice_poly = pathing.polar_order(dirty_slice)
     return slice_poly
 
 def calc_paths(slice_coords):
@@ -80,7 +82,7 @@ def calc_paths(slice_coords):
     global layers
     layers = []
     for slice_layer in slice_data:
-        # NN_order for now
+        # NN_order/Polar for now
         layer_polygon = clean_slice(slice_layer)
         layer_obj = layer.Layer(layer_polygon[:,0:2], 'Transverse', 45)
         layers.append(layer_obj)
