@@ -12,7 +12,6 @@ import settings
 import ded_gui as gui
 import mp3d_widget as mp3d
 import matplotlib.pyplot as plt
-from mpl_toolkits import mplot3d
 import sys
 import math
 from PyQt4 import QtCore, QtGui
@@ -42,7 +41,7 @@ def open_stl(widget):
     else:
         global stl_mesh
         stl_mesh = mesh.Mesh.from_file(filename)
-        stl_mesh.rotate([-0.5, 0.0, 0.0], math.radians(90))
+        stl_mesh.rotate([0.0, 0.0, 0.0], math.radians(90))
         widget.update_figure(stl_mesh)
     global stl_load_state
     stl_load_state = True
