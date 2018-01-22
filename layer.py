@@ -45,6 +45,7 @@ class Layer:
 		self.scan_list = self.get_scanlines()
 		self.intersects = self.get_intersects()
 		self.infill = self.get_infill()
+		self.path_length = self.calc_length()
 		
 	def layer_bound(self):
 		# Bounds of layer
@@ -161,8 +162,24 @@ class Layer:
 		for line in self.infill:
 			x_vec = [line[0][0], line[1][0]]
 			y_vec = [line[0][1], line[1][1]]
-			plt.plot(x_vec, y_vec, color = 'xkcd:pastel purple')		
-		
+			plt.plot(x_vec, y_vec, color = 'xkcd:pastel purple')
+			
+	def calc_length(self):
+		path_length = float(0)
+		for pair in self.infill:
+			one_dist = self._euclidean(pair)
+			path_length += one_dist
+		return path_length
+	
+	
+	@staticmethod
+	def _euclidean(pair):
+		d_x_1 = math.fabs(pair[1][0] - pair[0][0])
+		d_y_1 = math.fabs(pair[1][1] - pair[0][1])
+		d_1 = math.sqrt(math.pow(d_x_1, 2) + math.pow(d_y_1, 2))		
+		return d_1
+	
+	
 	@staticmethod
 	def _swap(paths, idx):
 		temp1 = []
@@ -187,8 +204,6 @@ class Layer:
 		pco.AddPath(pyclipper.scale_to_clipper(poly), pyclipper.JT_ROUND, pyclipper.ET_CLOSEDPOLYGON)
 		offset = pco.Execute(-pyclipper.scale_to_clipper(Layer.bead_width/2))
 		offset = pyclipper.scale_from_clipper(offset)
-		print("POLY: ", poly)
-		print("OFFSET: ", offset)
 		offset = np.reshape(offset, (-1,2))
 		return offset
 	
@@ -199,9 +214,7 @@ def main():
 		#test_polygon = NN_order(test_polygon)
 		#test_polygon = convex_hull(test_polygon)
 		test_polygon = polar_order(test_polygon)
-		print(test_polygon.shape, test_polygon)
 		test_polygon = test_polygon[:,0:2]
-		print(test_polygon.shape, test_polygon)
 		test_infill = Layer(test_polygon, 'Transverse', 45)
 		# Check with plotting
 		test_polygon = np.append(test_polygon, test_polygon[0])
