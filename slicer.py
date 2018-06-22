@@ -23,18 +23,21 @@ import pickle
 import math
 
 # STL file for manual import
-file_name = 'Weld_Neg.stl'
+file_name = 'spec_neg.stl'
 
 def plot_mesh(mesh):
     """ Load and plot initial """
     figure = plt.figure()
     axes = mplot3d.Axes3D(figure)
     if mesh[0].shape[0] == 9:
-        axes.add_collection3d(mplot3d.art3d.Poly3DCollection(mesh.vectors))
+        axes.add_collection3d(mplot3d.art3d.Poly3DCollection(mesh.vectors ,linewidths=1, alpha=0.01))
+        axes.add_collection3d(mplot3d.art3d.Line3DCollection(mesh.vectors ,colors='k', linewidths=0.2, linestyles=':'))
         scale = mesh.points.flatten('C')
     if mesh[0].shape[0] == 3:
-        axes.add_collection3d(mplot3d.art3d.Poly3DCollection(mesh))   
+        axes.add_collection3d(mplot3d.art3d.Poly3DCollection(mesh, linewidths=1, alpha=0.5))   
+        axes.add_collection3d(mplot3d.art3d.Line3DCollection(mesh, colors='k', linewidths=0.2, linestyles=':'))   
         scale = mesh.flatten('C')
+    
     axes.auto_scale_xyz(scale, scale, scale)
     plt.show()
     
@@ -298,7 +301,7 @@ def plot_slice_dict_weld(slice_dict):
     
 def main():
     # Load up STL and Mesh
-    z_inc = 0.04
+    z_inc = 0.05
     your_mesh = mesh.Mesh.from_file(file_name)
     new_mesh = []
     for idx in range(len(your_mesh)):
@@ -306,12 +309,12 @@ def main():
         new_mesh.append(new_entry)
     new_mesh = np.asarray(new_mesh)
     print(your_mesh)
-    your_mesh.rotate([-0.5, 0.0, 0.0], math.radians(90))
+    your_mesh.rotate([-0.5, 0.0, 0.0], math.radians(0))
     print(your_mesh)
     plot_mesh(your_mesh)
     
     # Optional rotation of part
-    new_mesh = rotate_part(0,0,0,new_mesh)
+    new_mesh = rotate_part(0,90,0,new_mesh)
     
     plot_mesh(new_mesh)
     

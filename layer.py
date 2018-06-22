@@ -3,7 +3,7 @@
 
 """
 --------------------
-Layer infill
+Layer infill object
 --------------------
 Author: Jordan Cave
 --------------------
@@ -40,7 +40,7 @@ class Layer:
 		if self.fill_angle < 0 or self.fill_angle > math.pi/2:
 			raise Exception('Fill angle must be in [0,90]°')
 		self.hatch = hatch # Layer-to-layer orientation
-		self.free_form = free_form # Optioanl FF Manufacturing
+		self.free_form = free_form # Optional FF Manufacturing
 		self.bound_box = self.layer_bound()
 		self.scan_list = self.get_scanlines()
 		self.intersects = self.get_intersects()
@@ -111,7 +111,12 @@ class Layer:
 		pco = pyclipper.Pyclipper()
 		pco.AddPaths(pyclipper.scale_to_clipper(scans), pyclipper.PT_SUBJECT, closed = False)
 		#polygon = pyclipper.CleanPolygon(polygon, distance = 0.00005)
-		clip_poly = self._offset_profile(poly)
+		if self.free_form == False:
+			clip_poly = self._offset_profile(poly)
+		elif self.free_form == True:
+			clip_poly = poly
+		else:
+			raise Exception("Not a valid build type")
 		pco.AddPath(pyclipper.scale_to_clipper(clip_poly), pyclipper.PT_CLIP, True)
 		solution = pco.Execute2(pyclipper.CT_INTERSECTION)
 		self.intersects = pyclipper.scale_from_clipper(pyclipper.PolyTreeToPaths(solution))
@@ -211,6 +216,7 @@ def main():
 		
 		#Try loading polygon
 		test_polygon = pickle.load(open('poly_data.pkl', 'rb'))
+
 		#test_polygon = NN_order(test_polygon)
 		#test_polygon = convex_hull(test_polygon)
 		test_polygon = polar_order(test_polygon)
@@ -221,12 +227,12 @@ def main():
 		test_polygon = test_polygon.reshape(-1,2)
 		mpl.style.use('ggplot')
 		fig, ax = plt.subplots()
-		ax.set_xlim([-1,1])
-		ax.set_ylim([-1,1])
+		ax.set_xlim([-1.5,1.5])
+		ax.set_ylim([-1.5,1.5])
 		x_poly, y_poly = test_polygon[:,0], test_polygon[:,1]
 		plt.plot(x_poly, y_poly, color = 'green')
 		
-		## Pretty plots
+		# Pretty plots
 		#for line in test_infill.scan_list:
 			#x_vec = [line[0][0], line[1][0]]
 			#y_vec = [line[0][1], line[1][1]]
@@ -237,12 +243,13 @@ def main():
 			y_vec = [line[0][1], line[1][1]]
 			plt.plot(x_vec, y_vec, color = 'xkcd:pastel purple')
 		
-		test_infill.plot_toolpath()
+		#test_infill.plot_toolpath()
 		# Calculated again just for plottting
-		#clip_poly = Layer._offset_profile(test_infill.polygon)
-		#print(clip_poly)
-		#x_vec_p = []
-		#y_vec_p = []
+		clip_poly = Layer._offset_profile(test_infill.polygon)
+		clip_poly = np.vstack((clip_poly, clip_poly[0]))
+		print(clip_poly)
+		x_vec_p = []
+		y_vec_p = []
 		#for line in clip_poly:
 			#x_vec_p.append(line[0])
 			#y_vec_p.append(line[1])

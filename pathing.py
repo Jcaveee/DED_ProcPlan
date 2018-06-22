@@ -175,7 +175,7 @@ def main():
     
     # Load data from DED_MOD_X.py    
     slice_dict = pickle.load(open('slice_data.pkl', 'rb'))    
-    sample_slice = slice_dict[6]
+    sample_slice = slice_dict[12]
     
     # Plot original slice
     plot_slice(sample_slice) 

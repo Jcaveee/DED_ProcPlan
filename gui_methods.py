@@ -85,13 +85,20 @@ def calc_paths(slice_coords):
         layer_polygon = clean_slice(slice_layer)
         layer_obj = layer.Layer(layer_polygon[:,0:2], 'Transverse', 45)
         layers.append(layer_obj)
-        
+       
     time_est = 4585
-    print("\n", "PATH LENGTH: ", layers[5].path_length, "\n")
-    print("\n", "ESTIMATED BUILD TIME: ", time_est, "\n")
-        
+
 def plot_layer_path(widget, layer):
+    """  Plot layer path... """
     widget.update_figure(layer)
+
+def path_output():
+    """ Text file output of path """
+    print(layers[2].infill)
+    
+def path_to_gcode():
+    """ Siemens 840D Translation for toolpath"""
+    pass
 
 def main():
     
@@ -114,9 +121,13 @@ def main():
     ui.pushButton_5.clicked.connect(lambda: read_path_num(ui.spinBox))
     ui.pushButton_5.clicked.connect(lambda: plot_layer_path(ui.matplotlibwidget, layers[layer_num]))
     
+    # Output path to text file
+    ui.pushButton_3.clicked.connect(lambda: path_output())
+    
+    # Calculate G-Code - Siemens 840D
+    
     
     sys.exit(app.exec_())
-
     
 if __name__ == "__main__":
     print(__doc__)
